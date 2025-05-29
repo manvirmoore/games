@@ -7,22 +7,22 @@ pygame.init() #always need this
 screen = pygame.display.set_mode((800, 400)) #creates 'display surface' with width, height which must be stored in a variable
 pygame.display.set_caption('Runner') #changes window title
 clock = pygame.time.Clock() #creating the clock (for FPS)
-test_font = pygame.font.Font('PyGame/Pixeltype.ttf', 50) #Defines a font, needs font type (none, or a ttf file), size
+test_font = pygame.font.Font('assets/Pixeltype.ttf', 50) #Defines a font, needs font type (none, or a ttf file), size
 
 #test_surf = pygame.Surface((100,200)) #also needs width, height. This creates a surface of specified size (just a box)
 #test_surf.fill('Red') #pygame recognises lots of colours. colours the whole rectangle.
 
 ## Import surfaces (i.e. images)
-sky_surf = pygame.image.load('PyGame/Sky.png').convert_alpha() #.convert_alpha removes the whitespace from the image.
-ground_surf = pygame.image.load('PyGame/ground.png').convert_alpha()
+sky_surf = pygame.image.load('assets/Sky.png').convert_alpha() #.convert_alpha removes the whitespace from the image.
+ground_surf = pygame.image.load('assets/ground.png').convert_alpha()
 text_surf = test_font.render('manni game', False, 'Black') #needs text, anti aliasing, colour
 text_rect = text_surf.get_rect(center = (400, 50)) #half of screen size.
 
-thing_surf = pygame.transform.flip(pygame.image.load('PyGame/thing.png').convert_alpha(), flip_x=True, flip_y=False)
+thing_surf = pygame.transform.flip(pygame.image.load('assets/thing.png').convert_alpha(), flip_x=True, flip_y=False)
 thing_rect = thing_surf.get_rect(bottomright = (600, 300))
 
 ## creating a rectangle for player
-king_surf = pygame.image.load('PyGame/king.png').convert_alpha()
+king_surf = pygame.image.load('assets/king.png').convert_alpha()
 king_rect = king_surf.get_rect(midbottom = (80,300))
 
 ## event loop - everything happens in this while loop
