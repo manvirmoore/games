@@ -47,7 +47,8 @@ while True: #never will be false (i think) as we want the window to stay open in
 
     screen.blit(king_surf,king_rect)
 
-    pygame.draw.line(screen, 'Black', (0,0),(800,400))
+    # pygame.draw.line(screen, 'Black', (0,0),(800,400))
+
     ## Collisions
     # if king_rect.colliderect(thing_rect):   # returns 1 (True) when collision (each loop). so multiple collision events. 
     #     print('ouch') 
