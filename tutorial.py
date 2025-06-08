@@ -7,6 +7,7 @@ def display_score():
     score_surf = txt_font.render(f'Score: {current_time}', False, (64,64,64))
     score_rect = score_surf.get_rect(center = (400,100))
     screen.blit(score_surf, score_rect)
+    return current_time
 
 pygame.init() #always need this
 
@@ -17,6 +18,7 @@ clock = pygame.time.Clock() #creating the clock (for FPS)
 txt_font = pygame.font.Font('assets/Pixeltype.ttf', 50) #Defines a font, needs font type (none, or a ttf file), size
 game_active = 0 #game state
 start_time = 0 #reset timer
+score = 0
 
 ## Import surfaces
 sky_surf = pygame.image.load('assets/Sky.png').convert_alpha() #.convert_alpha removes the whitespace from the image.
@@ -30,12 +32,13 @@ start_rect = caption_surf.get_rect(center=(400, 100))
 instr_surf = txt_font.render('Press space to jump. Hit any key to start.', False, 'Black')
 instr_rect = instr_surf.get_rect(center = (400, 200))
 
-
 end_surf = txt_font.render('game over, press enter to restart', False, 'Black')
-end_rect = end_surf.get_rect(center = (400, 220)) 
+end_rect = end_surf.get_rect(center = (400, 280)) 
 
 thing_surf = pygame.transform.flip(pygame.image.load('assets/thing.png').convert_alpha(), flip_x=True, flip_y=False)
 thing_rect = thing_surf.get_rect(bottomright = (600, 300))
+end_thing_surf = pygame.transform.scale_by(thing_surf,3)
+end_thing_rect = end_thing_surf.get_rect(center = (400,200))
 
 player_surf = pygame.image.load('assets/king.png').convert_alpha()
 player_rect = player_surf.get_rect(midbottom = (80,300))
@@ -74,7 +77,7 @@ while True: #never will be false (i think) as we want the window to stay open in
         screen.blit(sky_surf,(0, 0)) #blit is 'block image transfer', puts one surface on another. needs surface, position arguments. 
         screen.blit(ground_surf,(0, 300)) #second surface goes to front
         screen.blit(caption_surf, caption_rect)
-        display_score()
+        score = display_score() # this still blits the score but it also saves it 
 
         #thing movement- thing_x tries to move thing -3 places unless it leaves the screen. Then it draws this.
         thing_rect.x -= 4 #moves thing left 4 x coords every loop
@@ -99,9 +102,12 @@ while True: #never will be false (i think) as we want the window to stay open in
     if game_active == 2:
         #end screen
         screen.fill((173, 35, 49))
+        score_surf = txt_font.render(f'Your score: {score}', False, 'Black')
+        score_rect = score_surf.get_rect(center = (400, 120)) 
+        screen.blit(score_surf, score_rect)
+        screen.blit(end_thing_surf, end_thing_rect)
         screen.blit(end_surf, end_rect)
-        screen.blit(pygame.transform.scale_by(thing_surf,3), (400,120))
 
     ## update everything
-    pygame.display.update() #this updates the display surface with the above. just need to call it and then can forget
+    pygame.display.update() #this updates the display surface with the above (everything in the While statement). just need to call it and then can forget
     clock.tick(60) #sets max FPS (can't set min)
