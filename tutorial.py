@@ -15,7 +15,7 @@ screen = pygame.display.set_mode((800, 400)) #creates 'display surface' with wid
 pygame.display.set_caption('manni game') #changes window title
 clock = pygame.time.Clock() #creating the clock (for FPS)
 txt_font = pygame.font.Font('assets/Pixeltype.ttf', 50) #Defines a font, needs font type (none, or a ttf file), size
-game_active = True #game state
+game_active = 0 #game state
 start_time = 0 #reset timer
 
 ## Import surfaces
@@ -24,6 +24,12 @@ ground_surf = pygame.image.load('assets/ground.png').convert_alpha()
 
 caption_surf = txt_font.render('manni game', False, 'Black') #needs text, anti aliasing, colour
 caption_rect = caption_surf.get_rect(center = (400, 50)) #half of screen size.
+
+start_rect = caption_surf.get_rect(center=(400, 100))
+
+instr_surf = txt_font.render('Press space to jump. Hit any key to start.', False, 'Black')
+instr_rect = instr_surf.get_rect(center = (400, 200))
+
 
 end_surf = txt_font.render('game over, press enter to restart', False, 'Black')
 end_rect = end_surf.get_rect(center = (400, 220)) 
@@ -35,6 +41,9 @@ player_surf = pygame.image.load('assets/king.png').convert_alpha()
 player_rect = player_surf.get_rect(midbottom = (80,300))
 player_gravity = 0
 
+start_plyr_surf = pygame.transform.scale_by(player_surf,3)
+start_plyr_rect = start_plyr_surf.get_rect(center = (400,300))
+
 ## event loop - everything happens in this while loop
 while True: #never will be false (i think) as we want the window to stay open indefinitely
     for event in pygame.event.get():
@@ -42,16 +51,25 @@ while True: #never will be false (i think) as we want the window to stay open in
             pygame.quit() #this ensures we can quit
             exit() #exits out of code, avoid errors
         if event.type == pygame.KEYDOWN:
+            if game_active == 0:
+                game_active = 1
+                start_time = pygame.time.get_ticks()
             #jump
             if event.key == pygame.K_SPACE and player_rect.bottom == 300:
                 player_gravity = -15
             #reset game
-            if event.key == pygame.K_RETURN and game_active == False:
-                game_active = True
+            if event.key == pygame.K_RETURN and game_active == 2:
+                game_active = 1
                 thing_rect.x = 600
                 start_time = pygame.time.get_ticks()
     
-    if game_active:
+    if game_active == 0:
+        screen.fill((55, 138, 52))
+        screen.blit(caption_surf, start_rect)
+        screen.blit(instr_surf, instr_rect)
+        screen.blit(start_plyr_surf, start_plyr_rect)
+    
+    if game_active == 1:
         ## draw all static elements
         screen.blit(sky_surf,(0, 0)) #blit is 'block image transfer', puts one surface on another. needs surface, position arguments. 
         screen.blit(ground_surf,(0, 300)) #second surface goes to front
@@ -76,9 +94,9 @@ while True: #never will be false (i think) as we want the window to stay open in
 
         #collision
         if thing_rect.colliderect(player_rect):
-            game_active = False
+            game_active = 2
     
-    else:
+    if game_active == 2:
         #end screen
         screen.fill((173, 35, 49))
         screen.blit(end_surf, end_rect)
