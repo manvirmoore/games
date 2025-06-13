@@ -1,5 +1,6 @@
 import pygame
 from sys import exit #to close code
+from random import randint
 
 ## Functions
 def display_score():
@@ -8,6 +9,16 @@ def display_score():
     score_rect = score_surf.get_rect(center = (400,100))
     screen.blit(score_surf, score_rect)
     return current_time
+
+def obstacle_movement(obstacle_list):
+    if obstacle_list:
+        for obstacle_rect in obstacle_list:
+            obstacle_rect.x -= 5
+            screen.blit(thing_surf, obstacle_rect)
+        #after the obstacles move it checks which ones are off the screen and deletes them
+        obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > 0]
+        return obstacle_list
+    else: return []
 
 pygame.init() #always need this
 
@@ -19,6 +30,9 @@ txt_font = pygame.font.Font('assets/Pixeltype.ttf', 50) #Defines a font, needs f
 game_active = 0 #game state
 start_time = 0 #reset timer
 score = 0
+obstacle_timer = pygame.USEREVENT + 1 #basically creating a new event type
+pygame.time.set_timer(obstacle_timer,1400) #makes the obstacle_timer event happen every 1400 ms
+obstacle_rect_list = []
 
 ## Import surfaces
 sky_surf = pygame.image.load('assets/Sky.png').convert_alpha() #.convert_alpha removes the whitespace from the image.
@@ -65,7 +79,9 @@ while True: #never will be false (i think) as we want the window to stay open in
                 game_active = 1
                 thing_rect.x = 600
                 start_time = pygame.time.get_ticks()
-    
+        #if this isn't in event loop it gets triggered too many times
+        if event.type == obstacle_timer and game_active == 1:
+            obstacle_rect_list.append(thing_surf.get_rect(bottomright = (randint(900,1100),300)))
     if game_active == 0:
         screen.fill((55, 138, 52))
         screen.blit(caption_surf, start_rect)
@@ -79,13 +95,12 @@ while True: #never will be false (i think) as we want the window to stay open in
         screen.blit(caption_surf, caption_rect)
         score = display_score() # this still blits the score but it also saves it 
 
-        #thing movement- thing_x tries to move thing -3 places unless it leaves the screen. Then it draws this.
-        thing_rect.x -= 4 #moves thing left 4 x coords every loop
+        #thing_rect.x -= 4 #moves thing left 4 x coords every loop
+        # if thing_rect.right <= 0: 
+        #     thing_rect.left = 800 #loops it once it leaves the screen
+        # screen.blit(thing_surf, thing_rect) #moves the thing where the rectangle is drawn
 
-        if thing_rect.right <= 0: 
-            thing_rect.left = 800 #loops it once it leaves the screen
-
-        screen.blit(thing_surf, thing_rect) #moves the thing where the rectangle is drawn
+        obstacle_rect_list = obstacle_movement(obstacle_rect_list)
 
         player_gravity += 1
         player_rect.y += player_gravity
