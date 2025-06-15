@@ -14,11 +14,22 @@ def obstacle_movement(obstacle_list):
     if obstacle_list:
         for obstacle_rect in obstacle_list:
             obstacle_rect.x -= 5
-            screen.blit(thing_surf, obstacle_rect)
+
+            if obstacle_rect.bottom == 300:
+                screen.blit(thing_surf,obstacle_rect)
+            else: 
+                screen.blit(snake_surf,obstacle_rect)
+
         #after the obstacles move it checks which ones are off the screen and deletes them
         obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > 0]
         return obstacle_list
     else: return []
+
+def collisions(player, obstacles):
+    if obstacles:
+        for obstacle_rect in obstacles:
+            if player.colliderect(obstacle_rect): return 2
+    return 1
 
 pygame.init() #always need this
 
@@ -50,9 +61,11 @@ end_surf = txt_font.render('game over, press enter to restart', False, 'Black')
 end_rect = end_surf.get_rect(center = (400, 280)) 
 
 thing_surf = pygame.transform.flip(pygame.image.load('assets/thing.png').convert_alpha(), flip_x=True, flip_y=False)
-thing_rect = thing_surf.get_rect(bottomright = (600, 300))
+# thing_rect = thing_surf.get_rect(bottomright = (600, 300))
 end_thing_surf = pygame.transform.scale_by(thing_surf,3)
 end_thing_rect = end_thing_surf.get_rect(center = (400,200))
+
+snake_surf = pygame.transform.flip(pygame.image.load('assets/snake.png').convert_alpha(), flip_x=True, flip_y=False)
 
 player_surf = pygame.image.load('assets/king.png').convert_alpha()
 player_rect = player_surf.get_rect(midbottom = (80,300))
@@ -77,11 +90,14 @@ while True: #never will be false (i think) as we want the window to stay open in
             #reset game
             if event.key == pygame.K_RETURN and game_active == 2:
                 game_active = 1
-                thing_rect.x = 600
+                #thing_rect.x = 600
                 start_time = pygame.time.get_ticks()
         #if this isn't in event loop it gets triggered too many times
         if event.type == obstacle_timer and game_active == 1:
-            obstacle_rect_list.append(thing_surf.get_rect(bottomright = (randint(900,1100),300)))
+            if randint(0,2):
+                obstacle_rect_list.append(thing_surf.get_rect(bottomright = (randint(900,1100),300)))
+            else:
+                obstacle_rect_list.append(snake_surf.get_rect(bottomright = (randint(900,1100),210)))
     if game_active == 0:
         screen.fill((55, 138, 52))
         screen.blit(caption_surf, start_rect)
@@ -111,8 +127,9 @@ while True: #never will be false (i think) as we want the window to stay open in
         screen.blit(player_surf,player_rect)
 
         #collision
-        if thing_rect.colliderect(player_rect):
-            game_active = 2
+        # if thing_rect.colliderect(player_rect):
+        #     game_active = 2
+        game_active = collisions(player_rect, obstacle_rect_list)
     
     if game_active == 2:
         #end screen
@@ -122,6 +139,8 @@ while True: #never will be false (i think) as we want the window to stay open in
         screen.blit(score_surf, score_rect)
         screen.blit(end_thing_surf, end_thing_rect)
         screen.blit(end_surf, end_rect)
+        obstacle_rect_list.clear()
+        player_rect.midbottom = (80,300)
 
     ## update everything
     pygame.display.update() #this updates the display surface with the above (everything in the While statement). just need to call it and then can forget
