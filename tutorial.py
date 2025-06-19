@@ -31,6 +31,12 @@ def collisions(player, obstacles):
             if player.colliderect(obstacle_rect): return 2
     return 1
 
+def player_animation():
+    global player_surf, player_index
+    player_index += 0.1
+    if player_index > len(player_walk): player_index = 0
+    player_surf = player_walk[int(player_index)]
+
 pygame.init() #always need this
 
 ## Set up the sceen, FPS clock, font and constants
@@ -67,7 +73,11 @@ end_thing_rect = end_thing_surf.get_rect(center = (400,200))
 
 snake_surf = pygame.transform.flip(pygame.image.load('assets/snake.png').convert_alpha(), flip_x=True, flip_y=False)
 
-player_surf = pygame.image.load('assets/king.png').convert_alpha()
+player_surf_1 = pygame.image.load('assets/king.png').convert_alpha()
+player_surf_2 = pygame.image.load('assets/king2.png').convert_alpha()
+player_walk = [player_surf_1, player_surf_2]
+player_index = 0
+player_surf = player_walk[player_index]
 player_rect = player_surf.get_rect(midbottom = (80,300))
 player_gravity = 0
 
@@ -123,7 +133,7 @@ while True: #never will be false (i think) as we want the window to stay open in
 
         if player_rect.bottom > 300:
             player_rect.bottom = 300
-
+        player_animation()
         screen.blit(player_surf,player_rect)
 
         #collision
